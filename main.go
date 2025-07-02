@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"golang-protobuf/pb/chat"
+	"golang-protobuf/pb/common"
 	"golang-protobuf/pb/user"
 	"io"
 	"log"
@@ -25,14 +26,22 @@ type chatService struct {
 
 func (us *userService) CreateUser(ctx context.Context, userRequest *user.User) (*user.CreateResponse, error) {
 	if userRequest.Age < 1 {
-		return nil, status.Errorf(codes.InvalidArgument, "age must be above 0")
+		return &user.CreateResponse{
+			Base: &common.BaseResponse{
+				StatusCode: 400,
+				IsSuccess:  false,
+				Message:    "Validation error",
+			},
+		}, nil
 	}
-
-	return nil, status.Errorf(codes.Internal, "server is bugged")
 
 	log.Println("User is Created")
 	return &user.CreateResponse{
-		Message: "User Created",
+		Base: &common.BaseResponse{
+			StatusCode: 200,
+			IsSuccess:  true,
+			Message:    "User Created",
+		},
 	}, nil
 }
 
