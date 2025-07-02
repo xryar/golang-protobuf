@@ -63,9 +63,37 @@ func (cs *chatService) ReceiveMessage(request *chat.ReceiveMessageRequest, strea
 	return nil
 }
 
-// func (UnimplementedChatServiceServer) Chat(grpc.BidiStreamingServer[ChatMessage, ChatMessage]) error {
-// 	return status.Errorf(codes.Unimplemented, "method Chat not implemented")
-// }
+func (cs *chatService) Chat(stream grpc.BidiStreamingServer[chat.ChatMessage, chat.ChatMessage]) error {
+	for {
+		msg, err := stream.Recv()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return status.Errorf(codes.Unknown, "error receiving message")
+		}
+
+		log.Printf("Got message to %s content %s", msg.Message, msg.Content)
+
+		err = stream.Send(&chat.ChatMessage{
+			Message: "Acumalaka",
+			Content: "Reply from server",
+		})
+		if err != nil {
+			return status.Errorf(codes.Unknown, "error sending message")
+		}
+
+		err = stream.Send(&chat.ChatMessage{
+			Message: "Acumalaka",
+			Content: "Reply from server #2",
+		})
+		if err != nil {
+			return status.Errorf(codes.Unknown, "error sending message")
+		}
+	}
+	return nil
+}
 
 func main() {
 	listen, err := net.Listen("tcp", ":8080")

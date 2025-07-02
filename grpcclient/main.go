@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
 	"golang-protobuf/pb/chat"
-	"io"
 	"log"
 
 	"google.golang.org/grpc"
@@ -18,23 +16,47 @@ func main() {
 	}
 
 	chatClient := chat.NewChatServiceClient(clientConnection)
-	stream, err := chatClient.ReceiveMessage(context.Background(), &chat.ReceiveMessageRequest{
-		UserId: 30,
-	})
+	stream, err := chatClient.Chat(context.Background())
 	if err != nil {
 		log.Fatal("Failed to send message", err)
 	}
 
-	for {
-		msg, err := stream.Recv()
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-			log.Fatal("Failed to recieve message ", err)
-		}
-
-		log.Printf("Got message to %s content %s", msg.Message, msg.Content)
+	err = stream.Send(&chat.ChatMessage{
+		Message: "ACumalaka",
+		Content: "Hello this is client",
+	})
+	if err != nil {
+		log.Fatalf("Failed to send message %v", err)
 	}
+
+	msg, err := stream.Recv()
+	if err != nil {
+		log.Fatalf("Failed to receive message %v", err)
+	}
+	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
+
+	msg, err = stream.Recv()
+	if err != nil {
+		log.Fatalf("Failed to receive message %v", err)
+	}
+	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
+
+	err = stream.Send(&chat.ChatMessage{
+		Message: "ACumalaka",
+		Content: "Hello this is client again rawr",
+	})
+	if err != nil {
+		log.Fatalf("Failed to send message %v", err)
+	}
+	msg, err = stream.Recv()
+	if err != nil {
+		log.Fatalf("Failed to receive message %v", err)
+	}
+	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
+	msg, err = stream.Recv()
+	if err != nil {
+		log.Fatalf("Failed to receive message %v", err)
+	}
+	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
 
 }
