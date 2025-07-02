@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"golang-protobuf/pb/chat"
+	"golang-protobuf/pb/user"
 	"log"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 func main() {
@@ -15,48 +17,27 @@ func main() {
 		log.Fatal("Failed to create client ", err)
 	}
 
-	chatClient := chat.NewChatServiceClient(clientConnection)
-	stream, err := chatClient.Chat(context.Background())
-	if err != nil {
-		log.Fatal("Failed to send message", err)
-	}
-
-	err = stream.Send(&chat.ChatMessage{
-		Message: "ACumalaka",
-		Content: "Hello this is client",
+	userClinet := user.NewUserServiceClient(clientConnection)
+	response, err := userClinet.CreateUser(context.Background(), &user.User{
+		Age: 30,
 	})
 	if err != nil {
-		log.Fatalf("Failed to send message %v", err)
+		st, ok := status.FromError(err)
+		if ok {
+			if st.Code() == codes.InvalidArgument {
+				log.Println("There is validation error", st.Message())
+			} else if st.Code() == codes.Unknown {
+				log.Println("There is unknow error", st.Message())
+			} else if st.Code() == codes.Internal {
+				log.Println("There is internal error", st.Message())
+			}
+
+			return
+		}
+
+		log.Println("Failed to send message ", err)
+		return
 	}
 
-	msg, err := stream.Recv()
-	if err != nil {
-		log.Fatalf("Failed to receive message %v", err)
-	}
-	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
-
-	msg, err = stream.Recv()
-	if err != nil {
-		log.Fatalf("Failed to receive message %v", err)
-	}
-	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
-
-	err = stream.Send(&chat.ChatMessage{
-		Message: "ACumalaka",
-		Content: "Hello this is client again rawr",
-	})
-	if err != nil {
-		log.Fatalf("Failed to send message %v", err)
-	}
-	msg, err = stream.Recv()
-	if err != nil {
-		log.Fatalf("Failed to receive message %v", err)
-	}
-	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
-	msg, err = stream.Recv()
-	if err != nil {
-		log.Fatalf("Failed to receive message %v", err)
-	}
-	log.Printf("Got reply from server %s content %s", msg.Message, msg.Content)
-
+	log.Println("Response from server ", response.Message)
 }
