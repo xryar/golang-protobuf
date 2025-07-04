@@ -10,6 +10,7 @@ import (
 	common "golang-protobuf/pb/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -98,6 +99,8 @@ type User struct {
 	IsActive      bool                   `protobuf:"varint,5,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
 	Address       *Address               `protobuf:"bytes,6,opt,name=address,proto3" json:"address,omitempty"`
 	Educations    []string               `protobuf:"bytes,7,rep,name=educations,proto3" json:"educations,omitempty"`
+	SpouseName    string                 `protobuf:"bytes,8,opt,name=spouse_name,json=spouseName,proto3" json:"spouse_name,omitempty"`
+	Birtdate      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=birtdate,proto3" json:"birtdate,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -174,9 +177,24 @@ func (x *User) GetEducations() []string {
 	return nil
 }
 
+func (x *User) GetSpouseName() string {
+	if x != nil {
+		return x.SpouseName
+	}
+	return ""
+}
+
+func (x *User) GetBirtdate() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Birtdate
+	}
+	return nil
+}
+
 type CreateResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Base          *common.BaseResponse   `protobuf:"bytes,1,opt,name=base,proto3" json:"base,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -218,16 +236,23 @@ func (x *CreateResponse) GetBase() *common.BaseResponse {
 	return nil
 }
 
+func (x *CreateResponse) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
 var File_user_user_proto protoreflect.FileDescriptor
 
 const file_user_user_proto_rawDesc = "" +
 	"\n" +
-	"\x0fuser/user.proto\x12\x04user\x1a\x1acommon/base_response.proto\"l\n" +
+	"\x0fuser/user.proto\x12\x04user\x1a\x1acommon/base_response.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"l\n" +
 	"\aAddress\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12!\n" +
 	"\ffull_address\x18\x02 \x01(\tR\vfullAddress\x12\x1a\n" +
 	"\bprovince\x18\x03 \x01(\tR\bprovince\x12\x12\n" +
-	"\x04city\x18\x04 \x01(\tR\x04city\"\xae\x01\n" +
+	"\x04city\x18\x04 \x01(\tR\x04city\"\x87\x02\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x10\n" +
 	"\x03age\x18\x03 \x01(\x03R\x03age\x12\x18\n" +
@@ -236,9 +261,14 @@ const file_user_user_proto_rawDesc = "" +
 	"\aaddress\x18\x06 \x01(\v2\r.user.AddressR\aaddress\x12\x1e\n" +
 	"\n" +
 	"educations\x18\a \x03(\tR\n" +
-	"educationsJ\x04\b\x02\x10\x03\":\n" +
+	"educations\x12\x1f\n" +
+	"\vspouse_name\x18\b \x01(\tR\n" +
+	"spouseName\x126\n" +
+	"\bbirtdate\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\bbirtdateJ\x04\b\x02\x10\x03\"u\n" +
 	"\x0eCreateResponse\x12(\n" +
-	"\x04base\x18\x01 \x01(\v2\x14.common.BaseResponseR\x04base2=\n" +
+	"\x04base\x18\x01 \x01(\v2\x14.common.BaseResponseR\x04base\x129\n" +
+	"\n" +
+	"created_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt2=\n" +
 	"\vUserService\x12.\n" +
 	"\n" +
 	"CreateUser\x12\n" +
@@ -258,21 +288,24 @@ func file_user_user_proto_rawDescGZIP() []byte {
 
 var file_user_user_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_user_user_proto_goTypes = []any{
-	(*Address)(nil),             // 0: user.Address
-	(*User)(nil),                // 1: user.User
-	(*CreateResponse)(nil),      // 2: user.CreateResponse
-	(*common.BaseResponse)(nil), // 3: common.BaseResponse
+	(*Address)(nil),               // 0: user.Address
+	(*User)(nil),                  // 1: user.User
+	(*CreateResponse)(nil),        // 2: user.CreateResponse
+	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*common.BaseResponse)(nil),   // 4: common.BaseResponse
 }
 var file_user_user_proto_depIdxs = []int32{
 	0, // 0: user.User.address:type_name -> user.Address
-	3, // 1: user.CreateResponse.base:type_name -> common.BaseResponse
-	1, // 2: user.UserService.CreateUser:input_type -> user.User
-	2, // 3: user.UserService.CreateUser:output_type -> user.CreateResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 1: user.User.birtdate:type_name -> google.protobuf.Timestamp
+	4, // 2: user.CreateResponse.base:type_name -> common.BaseResponse
+	3, // 3: user.CreateResponse.created_at:type_name -> google.protobuf.Timestamp
+	1, // 4: user.UserService.CreateUser:input_type -> user.User
+	2, // 5: user.UserService.CreateUser:output_type -> user.CreateResponse
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_user_user_proto_init() }
