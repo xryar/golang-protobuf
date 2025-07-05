@@ -7,6 +7,7 @@
 package user
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	common "golang-protobuf/pb/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -95,7 +96,7 @@ type User struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Age           int64                  `protobuf:"varint,3,opt,name=age,proto3" json:"age,omitempty"`
-	Balance       float32                `protobuf:"fixed32,4,opt,name=balance,proto3" json:"balance,omitempty"`
+	Balance       float64                `protobuf:"fixed64,4,opt,name=balance,proto3" json:"balance,omitempty"`
 	IsActive      bool                   `protobuf:"varint,5,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
 	Address       *Address               `protobuf:"bytes,6,opt,name=address,proto3" json:"address,omitempty"`
 	Educations    []string               `protobuf:"bytes,7,rep,name=educations,proto3" json:"educations,omitempty"`
@@ -149,7 +150,7 @@ func (x *User) GetAge() int64 {
 	return 0
 }
 
-func (x *User) GetBalance() float32 {
+func (x *User) GetBalance() float64 {
 	if x != nil {
 		return x.Balance
 	}
@@ -247,16 +248,16 @@ var File_user_user_proto protoreflect.FileDescriptor
 
 const file_user_user_proto_rawDesc = "" +
 	"\n" +
-	"\x0fuser/user.proto\x12\x04user\x1a\x1acommon/base_response.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"l\n" +
+	"\x0fuser/user.proto\x12\x04user\x1a\x1acommon/base_response.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"l\n" +
 	"\aAddress\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12!\n" +
 	"\ffull_address\x18\x02 \x01(\tR\vfullAddress\x12\x1a\n" +
 	"\bprovince\x18\x03 \x01(\tR\bprovince\x12\x12\n" +
-	"\x04city\x18\x04 \x01(\tR\x04city\"\x87\x02\n" +
+	"\x04city\x18\x04 \x01(\tR\x04city\"\xa9\x02\n" +
 	"\x04User\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x10\n" +
-	"\x03age\x18\x03 \x01(\x03R\x03age\x12\x18\n" +
-	"\abalance\x18\x04 \x01(\x02R\abalance\x12\x1b\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x19\n" +
+	"\x03age\x18\x03 \x01(\x03B\a\xbaH\x04\"\x02(\x00R\x03age\x121\n" +
+	"\abalance\x18\x04 \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x80\x84.A)\x00\x00\x00\x00\x00\x00\x00\x00R\abalance\x12\x1b\n" +
 	"\tis_active\x18\x05 \x01(\bR\bisActive\x12'\n" +
 	"\aaddress\x18\x06 \x01(\v2\r.user.AddressR\aaddress\x12\x1e\n" +
 	"\n" +

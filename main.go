@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 
+	protovalidate "buf.build/go/protovalidate"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
@@ -26,14 +27,8 @@ type chatService struct {
 }
 
 func (us *userService) CreateUser(ctx context.Context, userRequest *user.User) (*user.CreateResponse, error) {
-	if userRequest.Age < 1 {
-		return &user.CreateResponse{
-			Base: &common.BaseResponse{
-				StatusCode: 400,
-				IsSuccess:  false,
-				Message:    "Validation error",
-			},
-		}, nil
+	if err := protovalidate.Validate(userRequest); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "validation error %v", err)
 	}
 
 	log.Println("User is Created")
