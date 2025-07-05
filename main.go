@@ -28,6 +28,26 @@ type chatService struct {
 
 func (us *userService) CreateUser(ctx context.Context, userRequest *user.User) (*user.CreateResponse, error) {
 	if err := protovalidate.Validate(userRequest); err != nil {
+		if ve, ok := err.(*protovalidate.ValidationError); ok {
+			var validations []*common.ValidationError = make([]*common.ValidationError, 0)
+			for _, fieldErr := range ve.Violations {
+				log.Printf("Field %s message %s", *fieldErr.Proto.Field.Elements[0].FieldName, *fieldErr.Proto.Message)
+
+				validations = append(validations, &common.ValidationError{
+					Field:   *fieldErr.Proto.Field.Elements[0].FieldName,
+					Message: *fieldErr.Proto.Message,
+				})
+			}
+
+			return &user.CreateResponse{
+				Base: &common.BaseResponse{
+					ValidationErrors: validations,
+					StatusCode:       400,
+					IsSuccess:        false,
+					Message:          "validation error",
+				},
+			}, nil
+		}
 		return nil, status.Errorf(codes.InvalidArgument, "validation error %v", err)
 	}
 
