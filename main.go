@@ -18,6 +18,20 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func loggingMiddleware(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+	log.Println("Masuk logging middleware")
+	log.Println(info.FullMethod)
+	res, err := handler(ctx, req)
+
+	log.Println("Setelah request")
+	return res, err
+}
+
+func authMiddleware(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+	log.Println("Masuk auth middleware")
+	return handler(ctx, req)
+}
+
 type userService struct {
 	user.UnimplementedUserServiceServer
 }
@@ -133,7 +147,12 @@ func main() {
 		log.Fatal("There is error in your net listen ", err)
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			loggingMiddleware,
+			authMiddleware,
+		),
+	)
 
 	user.RegisterUserServiceServer(server, &userService{})
 	chat.RegisterChatServiceServer(server, &chatService{})
