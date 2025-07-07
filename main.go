@@ -178,7 +178,7 @@ func (cs *chatService) Chat(stream grpc.BidiStreamingServer[chat.ChatMessage, ch
 }
 
 func main() {
-	listen, err := net.Listen("tcp", ":8080")
+	listen, err := net.Listen("tcp", ":8082")
 	if err != nil {
 		log.Fatal("There is error in your net listen ", err)
 	}
